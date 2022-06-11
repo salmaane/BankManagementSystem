@@ -3,11 +3,13 @@
 #include"functions.h"
 
 
-
 int main() {
-    int choice;
     printf("\t\t\t\tCUSTOMER ACCOUNT BANKING MANAGEMENT SYSTEM");
+
+    customer = (customers*)malloc(size* sizeof(customers));
+    int choice;
     choice = menu();
+
     switch(choice){
         case 1 :
 //            new_acc();
