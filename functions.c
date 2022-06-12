@@ -20,44 +20,75 @@ int menu(){
 
 
 
-customers get_infos(){
-    customer[count].no = count+1;
+custs get_infos(){
+    custs customer;
 
     printf("\nEnter your name :_");
-    scanf("%s",customer[count].name);
+    scanf("%s", customer.name);
+    fflush(stdin);
 
     printf("\nEnter your date of birth :_");
-    scanf("%s",customer[count].birth_date);
+    scanf("%s", customer.birth_date);
+    fflush(stdin);
 
     printf("\nEnter your adress :_");
-    scanf("%s",customer[count].adress);
+    scanf("%s", customer.adress);
+    fflush(stdin);
 
     printf("\nEnter your citizenship id :_");
-    scanf("%d",&customer[count].citizenship_id);
+    scanf("%s", customer.citizenship_id);
+    fflush(stdin);
 
     printf("\nEnter your phone number :_");
-    scanf("%d",&customer[count].phone_num);
+    scanf("%d",&customer.phone_num);
+    fflush(stdin);
 
     printf("\nHow mush sold you want deposit to create your account :_");
-    scanf("%d",&customer[count].sold);
+    scanf("%d",&customer.sold);
+    fflush(stdin);
 
     printf("\nChoose a username :_");
-    scanf("%s",customer[count].username); // still have to check if username already exist.
+    scanf("%s", customer.username); // still have to check if username already exist.
+    fflush(stdin);
 
     printf("\nchoose a strong password :_");
-    scanf("%s",customer[count].password);
+    scanf("%s", customer.password);
+    fflush(stdin);
 
-    return customer[count];
+    return customer;
 }
 
 
 
 
 void new_acc(){
-    if(count == size){
-        size +=5;
-        customer = (customers*)realloc(customer,size*sizeof(customers));
-    }
+    custs customer = get_infos();
+    FILE *f;
+    f = fopen("custlist.txt","a");
+    fwrite(&customer,sizeof(custs),1,f);
+    fclose(f);
+}
 
+
+void edit(){
+
+}
+
+
+void transact(){
+
+}
+
+void see(){
+
+}
+
+
+void delete(){
+
+}
+
+
+void view_list(){
 
 }
