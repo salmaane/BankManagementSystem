@@ -90,5 +90,13 @@ void delete(){
 
 
 void view_list(){
-
+    custs customer;
+    FILE *f = fopen("custlist.txt","r");
+    while(fread(&customer,sizeof(custs),1,f)){
+        printf("\nCUSTOMER %d --> Name : %s\n\t\t\t   Birth date : %s\n\t\t\t   Phone number : %d"
+               "\n\t\t\t   Citizenship id : %s\n\t\t\t   Adress : %s\n\t\t\t   Sold : %d"
+               ,customer.no,customer.name,customer.birth_date,customer.phone_num,customer.citizenship_id
+               ,customer.adress,customer.sold);
+    }
+    fclose(f);
 }
