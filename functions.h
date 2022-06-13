@@ -34,6 +34,8 @@ void view_list();
 
 custs get_infos();
 
+custs login();
+
 
 
 #endif //BANKMANAGEMENTSYSTEM_FUNCTIONS_H

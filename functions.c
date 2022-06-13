@@ -1,5 +1,5 @@
 #include "functions.h"
-
+#include<string.h>
 
 
 int menu(){
@@ -61,12 +61,43 @@ custs get_infos(){
 
 
 
+custs login(){
+    int found=0;
+    custs customer;
+    char user[24],pass[24];
+    FILE *fp = fopen("custlist.txt","r");
+
+    do{
+        printf("\nEnter Your username :_");
+        scanf("%s",user);
+        fflush(stdin);
+
+        printf("Enter your password :_");
+        scanf("%s",pass);
+        fflush(stdin);
+
+        rewind(fp);
+        while(fread(&customer,sizeof(customer),1,fp)){
+            if(strcmp(customer.username,user)==0 && strcmp(customer.password,pass)==0){
+                found = 1;
+                break;
+            }
+        }
+        if(!found){
+            printf("Username or password are incorrect account not found.");
+        }
+    }while(found==0);
+    return customer;
+}
+
+
+
 
 void new_acc(){
     unsigned long long no,curr;
     custs customer = get_infos();
     FILE *f;
-    f = fopen("custlist.txt","a");
+    f = fopen("custlist.txt","ab");
 
     curr = ftell(f);
     fseek(f,0,SEEK_END);
@@ -76,10 +107,12 @@ void new_acc(){
     customer.no = (int)no;
     fwrite(&customer,sizeof(custs),1,f);
     fclose(f);
+    printf("\nAccount created successfuly.");
 }
 
 
 void edit(){
+    login();
 
 }
 
@@ -100,16 +133,23 @@ void delete(){
 
 void view_list(){
     custs customer;
-    FILE *f = fopen("custlist.txt","r");
-    if(f == NULL){
-        printf("File doesn't exist.");
+    int pin;;
+    printf("\nAdministrator PIN :_");
+    scanf("%d",&pin);
+    if(pin != 123){
+        printf("PIN incorrect.");
     }else{
-        while(fread(&customer,sizeof(custs),1,f)){
-            printf("\nCUSTOMER %d -->  Name : %s\n\t\tBirth date : %s\n\t\tPhone number : %s"
-                   "\n\t\tCitizenship id : %s\n\t\tAdress : %s\n\t\tSold : %d"
-                   ,customer.no,customer.name,customer.birth_date,customer.phone_num,customer.citizenship_id
-                   ,customer.adress,customer.sold);
+        FILE *f = fopen("custlist.txt","rb");
+        if(f == NULL){
+            printf("\nFile doesn't exist.");
+        }else{
+            while(fread(&customer,sizeof(custs),1,f)){
+                printf("\n\nCUSTOMER %d -->  Name : %s\n\t\tBirth date : %s\n\t\tPhone number : %s"
+                       "\n\t\tCitizenship id : %s\n\t\tAdress : %s\n\t\tSold : %d\n\t\tusername : %s\n\t\tpassword : %s"
+                       ,customer.no,customer.name,customer.birth_date,customer.phone_num,customer.citizenship_id
+                       ,customer.adress,customer.sold,customer.username,customer.password);
+            }
+            fclose(f);
         }
-        fclose(f);
     }
 }
