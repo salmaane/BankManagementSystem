@@ -11,8 +11,8 @@ typedef struct customers{
     char birth_date[10];
     char adress[80];
     char citizenship_id[10];
-    int phone_num;
     int sold;
+    char phone_num[10];
     char username[24];
     char password[24];
 }custs;

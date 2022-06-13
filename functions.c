@@ -10,6 +10,7 @@ int menu(){
                "\n3. Do a transaction\n4. Check the details of existing account"
                "\n5. Removing existing account\n6. View custumer's list\n7. Exit\n\n\tEnter your choice :_");
         scanf("%d",&choice);
+        fflush(stdin);
         if(choice < 1 || choice > 7){
             printf("\nEnter a valid choice from the menu.");
         }
@@ -24,7 +25,7 @@ custs get_infos(){
     custs customer;
 
     printf("\nEnter your name :_");
-    scanf("%s", customer.name);
+    scanf("%[^\n]s", customer.name);
     fflush(stdin);
 
     printf("\nEnter your date of birth :_");
@@ -32,7 +33,7 @@ custs get_infos(){
     fflush(stdin);
 
     printf("\nEnter your adress :_");
-    scanf("%s", customer.adress);
+    scanf("%[^\n]s", customer.adress);
     fflush(stdin);
 
     printf("\nEnter your citizenship id :_");
@@ -40,7 +41,7 @@ custs get_infos(){
     fflush(stdin);
 
     printf("\nEnter your phone number :_");
-    scanf("%d",&customer.phone_num);
+    scanf("%s",customer.phone_num);
     fflush(stdin);
 
     printf("\nHow mush sold you want deposit to create your account :_");
@@ -52,7 +53,7 @@ custs get_infos(){
     fflush(stdin);
 
     printf("\nchoose a strong password :_");
-    scanf("%s", customer.password);
+    scanf("%s[^\n]", customer.password);
     fflush(stdin);
 
     return customer;
@@ -62,9 +63,17 @@ custs get_infos(){
 
 
 void new_acc(){
+    unsigned long long no,curr;
     custs customer = get_infos();
     FILE *f;
     f = fopen("custlist.txt","a");
+
+    curr = ftell(f);
+    fseek(f,0,SEEK_END);
+    no = (ftell(f)/sizeof(custs)) + 1;
+    fseek(f,(int)curr,SEEK_SET);
+
+    customer.no = (int)no;
     fwrite(&customer,sizeof(custs),1,f);
     fclose(f);
 }
@@ -92,11 +101,15 @@ void delete(){
 void view_list(){
     custs customer;
     FILE *f = fopen("custlist.txt","r");
-    while(fread(&customer,sizeof(custs),1,f)){
-        printf("\nCUSTOMER %d --> Name : %s\n\t\t\t   Birth date : %s\n\t\t\t   Phone number : %d"
-               "\n\t\t\t   Citizenship id : %s\n\t\t\t   Adress : %s\n\t\t\t   Sold : %d"
-               ,customer.no,customer.name,customer.birth_date,customer.phone_num,customer.citizenship_id
-               ,customer.adress,customer.sold);
+    if(f == NULL){
+        printf("File doesn't exist.");
+    }else{
+        while(fread(&customer,sizeof(custs),1,f)){
+            printf("\nCUSTOMER %d -->  Name : %s\n\t\tBirth date : %s\n\t\tPhone number : %s"
+                   "\n\t\tCitizenship id : %s\n\t\tAdress : %s\n\t\tSold : %d"
+                   ,customer.no,customer.name,customer.birth_date,customer.phone_num,customer.citizenship_id
+                   ,customer.adress,customer.sold);
+        }
+        fclose(f);
     }
-    fclose(f);
 }
