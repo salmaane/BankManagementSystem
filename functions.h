@@ -34,7 +34,9 @@ void view_list();
 
 custs get_infos();
 
-custs login();
+custs *login();
+
+custs update(custs customer);
 
 
 

@@ -20,7 +20,6 @@ int menu(){
 
 
 
-
 custs get_infos(){
     custs customer;
 
@@ -61,35 +60,93 @@ custs get_infos(){
 
 
 
-custs login(){
+custs *login(){
     int found=0;
-    custs customer;
+    custs *customer;
+    customer = (custs*)malloc(sizeof(custs));
     char user[24],pass[24];
+
+    printf("\nEnter Your username :_");
+    scanf("%s",user);
+    fflush(stdin);
+
+    printf("Enter your password :_");
+    scanf("%s",pass);
+    fflush(stdin);
+
     FILE *fp = fopen("custlist.txt","r");
-
-    do{
-        printf("\nEnter Your username :_");
-        scanf("%s",user);
-        fflush(stdin);
-
-        printf("Enter your password :_");
-        scanf("%s",pass);
-        fflush(stdin);
-
-        rewind(fp);
-        while(fread(&customer,sizeof(customer),1,fp)){
-            if(strcmp(customer.username,user)==0 && strcmp(customer.password,pass)==0){
-                found = 1;
-                break;
-            }
+    while(fread(customer,sizeof(custs),1,fp)){
+        if(strcmp(customer->username,user)==0 && strcmp(customer->password,pass)==0){
+            found = 1;
+            break;
         }
-        if(!found){
-            printf("Username or password are incorrect account not found.");
-        }
-    }while(found==0);
+        customer = NULL;
+    }
+    fclose(fp);
+    if(!found){
+        printf("\nUsername or password are incorrect account not found.");
+    }
     return customer;
 }
 
+
+
+custs update(custs customer){
+    short ch;
+    do{
+        printf("\nWhat information you wand to update :\n1. Name\n2. Birth date"
+               "\n3. Adress\n4. Citizenship id\n5. Phone number\n6. Username\n7. Paswword"
+               "\n0. Save changes\n\tChoice :_");
+        scanf("%hd",&ch);
+        fflush(stdin);
+        switch(ch) {
+            case 1:
+                printf("\nEnter new Name :_");
+                scanf("%s",customer.name);
+                fflush(stdin);
+                printf("Name changed.");
+                break;
+            case 2:
+                printf("\nEnter new Birth date :_");
+                scanf("%s",customer.birth_date);
+                fflush(stdin);
+                printf("Birth date changed.");
+                break;
+            case 3:
+                printf("\nEnter new Adress :_");
+                scanf("%s",customer.adress);
+                fflush(stdin);
+                printf("Adress changed.");
+                break;
+            case 4:
+                printf("\nEnter new Citizenship id :_");
+                scanf("%s",customer.citizenship_id);
+                fflush(stdin);
+                printf("Citizenship id changed.");
+            case 5:
+                printf("\nEnter new Phone number :_");
+                scanf("%s",customer.phone_num);
+                fflush(stdin);
+                printf("Phone number changed.");
+                break;
+            case 6:
+                printf("\nEnter new username :_");
+                scanf("%s",customer.username);
+                fflush(stdin);
+                printf("username changed.");
+                break;
+            case 7:
+                printf("\nEnter new Password :_");
+                scanf("%s",customer.password);
+                fflush(stdin);
+                printf("Password changed.");
+                break;
+            default :
+                break;
+        }
+    }while(ch!=0);
+    return customer;
+}
 
 
 
@@ -112,8 +169,10 @@ void new_acc(){
 
 
 void edit(){
-    login();
-
+    custs *customer =login();
+    if(customer!=NULL){
+        *customer = update(*customer);
+    }
 }
 
 
