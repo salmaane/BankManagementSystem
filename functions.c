@@ -8,7 +8,7 @@ int menu(){
         printf("\n\n\t\t\t\t   ----- WELCOME TO THE MAIN MENU -----");
         printf("\n1. Create new account\n2. Update informations of existing account"
                "\n3. Do a transaction\n4. Check the details of existing account"
-               "\n5. Removing existing account\n6. View custumer's list\n7. Exit\n\n\tEnter your choice :_");
+               "\n5. Removing existing account\n6. View custumer's list(Administrator)\n7. Exit\n\n\tEnter your choice :_");
         scanf("%d",&choice);
         fflush(stdin);
         if(choice < 1 || choice > 7){
@@ -74,17 +74,18 @@ custs *login(){
     scanf("%s",pass);
     fflush(stdin);
 
-    FILE *fp = fopen("custlist.txt","r");
+    FILE *fp = fopen("custlist.txt","rb");
+    rewind(fp);
     while(fread(customer,sizeof(custs),1,fp)){
         if(strcmp(customer->username,user)==0 && strcmp(customer->password,pass)==0){
             found = 1;
             break;
         }
-        customer = NULL;
     }
     fclose(fp);
     if(!found){
         printf("\nUsername or password are incorrect account not found.");
+        customer = NULL;
     }
     return customer;
 }
@@ -94,7 +95,7 @@ custs *login(){
 custs update(custs customer){
     short ch;
     do{
-        printf("\nWhat information you wand to update :\n1. Name\n2. Birth date"
+        printf("\nWhat information you want to update :\n1. Name\n2. Birth date"
                "\n3. Adress\n4. Citizenship id\n5. Phone number\n6. Username\n7. Paswword"
                "\n0. Save changes\n\tChoice :_");
         scanf("%hd",&ch);
@@ -102,7 +103,7 @@ custs update(custs customer){
         switch(ch) {
             case 1:
                 printf("\nEnter new Name :_");
-                scanf("%s",customer.name);
+                scanf("%[^\n]s",customer.name);
                 fflush(stdin);
                 printf("Name changed.");
                 break;
@@ -114,7 +115,7 @@ custs update(custs customer){
                 break;
             case 3:
                 printf("\nEnter new Adress :_");
-                scanf("%s",customer.adress);
+                scanf("%[^\n]s",customer.adress);
                 fflush(stdin);
                 printf("Adress changed.");
                 break;
@@ -123,6 +124,7 @@ custs update(custs customer){
                 scanf("%s",customer.citizenship_id);
                 fflush(stdin);
                 printf("Citizenship id changed.");
+                break;
             case 5:
                 printf("\nEnter new Phone number :_");
                 scanf("%s",customer.phone_num);
@@ -137,7 +139,7 @@ custs update(custs customer){
                 break;
             case 7:
                 printf("\nEnter new Password :_");
-                scanf("%s",customer.password);
+                scanf("%[^\n]s",customer.password);
                 fflush(stdin);
                 printf("Password changed.");
                 break;
@@ -172,6 +174,28 @@ void edit(){
     custs *customer =login();
     if(customer!=NULL){
         *customer = update(*customer);
+
+        FILE *fp = fopen("custlist.txt","rb");
+
+        fseek(fp,0,SEEK_END);
+        int i=0,size = (int)(ftell(fp)/sizeof(custs));
+        rewind(fp);
+
+        custs *customers=(custs*)malloc(size*sizeof(custs));
+        while(fread(&customers[i],sizeof(custs),1,fp)){
+            i++;
+        }
+        fclose(fp);
+
+        FILE *f = fopen("custlist.txt","w");
+        customers[customer->no-1] = *customer;
+        for(i=0;i<size;i++){
+            fwrite(&customers[i],sizeof(custs),1,fp);
+        }
+        printf("\nChanges saved.");
+        fclose(f);
+        free(customers);
+        customers = NULL;
     }
 }
 
