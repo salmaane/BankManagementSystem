@@ -38,6 +38,9 @@ custs *login();
 
 custs update(custs customer);
 
+void deposit(custs *custo);
+void soldout(custs *custo);
+
 
 
 #endif //BANKMANAGEMENTSYSTEM_FUNCTIONS_H

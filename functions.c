@@ -201,8 +201,93 @@ void edit(){
 
 
 void transact(){
+    custs *customer = login();
+    if(customer != NULL){
+        int ch;
+        printf("\nWhat operation you want to do :\n1. Deposit\n2. soldout\n0. exit\n\tChoice :_");
+        scanf("%d",&ch);
+        switch(ch){
+            case 1:
+                deposit(customer);
+                break;
+            case 2:
+                soldout(customer);
+                break;
+            default:
+                break;
+        }
+
+    }
 
 }
+
+void deposit(custs *custo){
+    FILE *fp = fopen("custlist.txt","rb");
+
+    fseek(fp,0,SEEK_END);
+    int i=0,size = (int)(ftell(fp)/sizeof(custs));
+    rewind(fp);
+
+    custs *customers=(custs*)malloc(size*sizeof(custs));
+    while(fread(&customers[i],sizeof(custs),1,fp)){
+        i++;
+    }
+    fclose(fp);
+
+    int transact;
+    printf("\n How mush sold you want to deposit :_");
+    scanf("%d",&transact);
+    fflush(stdin);
+    custo->sold += transact;
+    customers[custo->no-1] = *custo ;
+
+    FILE *f = fopen("custlist.txt","w");
+    for(i=0;i<size;i++){
+        fwrite(&customers[i],sizeof(custs),1,fp);
+    }
+    printf("\nOperation done.");
+    fclose(f);
+    free(customers);
+    customers = NULL;
+
+}
+
+
+void soldout(custs *custo){
+    FILE *fp = fopen("custlist.txt","rb");
+
+    fseek(fp,0,SEEK_END);
+    int i=0,size = (int)(ftell(fp)/sizeof(custs));
+    rewind(fp);
+
+    custs *customers=(custs*)malloc(size*sizeof(custs));
+    while(fread(&customers[i],sizeof(custs),1,fp)){
+        i++;
+    }
+    fclose(fp);
+
+    int transact;
+    printf("\n How mush sold you want to out :_");
+    scanf("%d",&transact);
+    fflush(stdin);
+
+    if(transact > custo->sold){
+        printf("\nOeration failed. You have only %d in your account .",custo->sold);
+    }else{
+        custo->sold -= transact;
+        customers[custo->no-1] = *custo ;
+
+        FILE *f = fopen("custlist.txt","w");
+        for(i=0;i<size;i++){
+            fwrite(&customers[i],sizeof(custs),1,fp);
+        }
+        printf("\nOperation done.");
+        fclose(f);
+        free(customers);
+        customers = NULL;
+    }
+}
+
 
 void see(){
 
@@ -228,7 +313,7 @@ void view_list(){
         }else{
             while(fread(&customer,sizeof(custs),1,f)){
                 printf("\n\nCUSTOMER %d -->  Name : %s\n\t\tBirth date : %s\n\t\tPhone number : %s"
-                       "\n\t\tCitizenship id : %s\n\t\tAdress : %s\n\t\tSold : %d\n\t\tusername : %s\n\t\tpassword : %s"
+                       "\n\t\tCitizenship id : %s\n\t\tAdress : %s\n\t\tSold : %ddh\n\t\tusername : %s\n\t\tpassword : %s"
                        ,customer.no,customer.name,customer.birth_date,customer.phone_num,customer.citizenship_id
                        ,customer.adress,customer.sold,customer.username,customer.password);
             }
