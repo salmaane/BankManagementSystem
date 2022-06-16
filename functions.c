@@ -19,46 +19,43 @@ int menu(){
 }
 
 
-
-custs get_infos(){
-    custs customer;
+custs *get_infos(){
+    custs *customer = (custs*)malloc(sizeof(custs));
 
     printf("\nEnter your name :_");
-    scanf("%[^\n]s", customer.name);
+    scanf("%[^\n]s", customer->name);
     fflush(stdin);
 
     printf("\nEnter your date of birth :_");
-    scanf("%s", customer.birth_date);
+    scanf("%10s", customer->birth_date);
     fflush(stdin);
 
     printf("\nEnter your adress :_");
-    scanf("%[^\n]s", customer.adress);
+    scanf("%[^\n]s", customer->adress);
     fflush(stdin);
 
     printf("\nEnter your citizenship id :_");
-    scanf("%s", customer.citizenship_id);
+    scanf("%10s", customer->citizenship_id);
     fflush(stdin);
 
     printf("\nEnter your phone number :_");
-    scanf("%s",customer.phone_num);
+    scanf("%10s",customer->phone_num);
     fflush(stdin);
 
     printf("\nHow mush sold you want deposit to create your account :_");
-    scanf("%d",&customer.sold);
+    scanf("%d",&customer->sold);
     fflush(stdin);
 
     printf("\nChoose a username :_");
-    scanf("%s", customer.username); // still have to check if username already exist.
+    scanf("%s", customer->username); // still have to check if username already exist.
     fflush(stdin);
 
     printf("\nchoose a strong password :_");
-    scanf("%s[^\n]", customer.password);
+    scanf("%s[^\n]", customer->password);
     fflush(stdin);
 
     return customer;
 }
-
-
 
 custs *login(){
     int found=0;
@@ -91,7 +88,6 @@ custs *login(){
 }
 
 
-
 custs update(custs customer){
     short ch;
     do{
@@ -109,7 +105,7 @@ custs update(custs customer){
                 break;
             case 2:
                 printf("\nEnter new Birth date :_");
-                scanf("%s",customer.birth_date);
+                scanf("%10s",customer.birth_date);
                 fflush(stdin);
                 printf("Birth date changed.");
                 break;
@@ -121,13 +117,13 @@ custs update(custs customer){
                 break;
             case 4:
                 printf("\nEnter new Citizenship id :_");
-                scanf("%s",customer.citizenship_id);
+                scanf("%10s",customer.citizenship_id);
                 fflush(stdin);
                 printf("Citizenship id changed.");
                 break;
             case 5:
                 printf("\nEnter new Phone number :_");
-                scanf("%s",customer.phone_num);
+                scanf("%10s",customer.phone_num);
                 fflush(stdin);
                 printf("Phone number changed.");
                 break;
@@ -151,10 +147,9 @@ custs update(custs customer){
 }
 
 
-
 void new_acc(){
     unsigned long long no,curr;
-    custs customer = get_infos();
+    custs *customer = get_infos();
     FILE *f;
     f = fopen("custlist.txt","ab");
 
@@ -163,8 +158,8 @@ void new_acc(){
     no = (ftell(f)/sizeof(custs)) + 1;
     fseek(f,(int)curr,SEEK_SET);
 
-    customer.no = (int)no;
-    fwrite(&customer,sizeof(custs),1,f);
+    customer->no = (int)no;
+    fwrite(customer,sizeof(custs),1,f);
     fclose(f);
     printf("\nAccount created successfuly.");
 }
@@ -221,6 +216,7 @@ void transact(){
 
 }
 
+
 void deposit(custs *custo){
     FILE *fp = fopen("custlist.txt","rb");
 
@@ -238,6 +234,7 @@ void deposit(custs *custo){
     printf("\n How mush sold you want to deposit :_");
     scanf("%d",&transact);
     fflush(stdin);
+
     custo->sold += transact;
     customers[custo->no-1] = *custo ;
 
@@ -274,8 +271,8 @@ void soldout(custs *custo){
     if(transact > custo->sold){
         printf("\nOeration failed. You have only %d in your account .",custo->sold);
     }else{
-        custo->sold -= transact;
-        customers[custo->no-1] = *custo ;
+        custo->sold = custo->sold - transact;
+        customers[custo->no - 1] = *custo ;
 
         FILE *f = fopen("custlist.txt","w");
         for(i=0;i<size;i++){
@@ -290,12 +287,49 @@ void soldout(custs *custo){
 
 
 void see(){
-
+    custs *customer= login();
+    if(customer!=NULL){
+        printf("\n\tName : %s\n\tBirth date : %s\n\tPhone number : %s"
+               "\n\tCitizenship id : %s\n\tAdress : %s\n\tSold : %ddh"
+                ,customer->name,customer->birth_date,customer->phone_num,customer->citizenship_id
+                ,customer->adress,customer->sold);
+    }
 }
 
 
 void delete(){
+    custs *customer =login();
+    if(customer!=NULL){
+        FILE *fp = fopen("custlist.txt","rb");
 
+        fseek(fp,0,SEEK_END);
+        int i=0,j,size = (int)(ftell(fp)/sizeof(custs));
+        rewind(fp);
+
+        custs *customers=(custs*)malloc(size*sizeof(custs));
+        while(fread(&customers[i],sizeof(custs),1,fp)){
+            i++;
+        }
+        fclose(fp);
+
+
+        FILE *f = fopen("custlist.txt","w");
+        for(i=0;i<size;i++){
+            if(strcmp(customers[i].name,customer->name) == 0){
+                j = i;
+                while(j<size){
+                    customers[j].no = customers[j].no - 1;
+                    j++;
+                }
+                continue;
+            }
+            fwrite(&customers[i],sizeof(custs),1,fp);
+        }
+        printf("\nAccount deleted.");
+        fclose(f);
+        free(customers);
+        customers = NULL;
+    }
 }
 
 
